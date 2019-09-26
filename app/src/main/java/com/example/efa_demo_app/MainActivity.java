@@ -281,12 +281,7 @@ public class MainActivity extends AppCompatActivity {
                             for (int i = 0; i < jsonArrayJourneys.length(); i++) {
                                 JSONObject journey = jsonArrayJourneys.getJSONObject(i);
 
-                                //int rating = journey.getInt("rating");
-                                //String isAdditional = journey.getString("isAdditional");
-                                //int interchanges = journey.getInt("interchanges");
-                                //Log.d("TripRequest_JOURNAYS", rating + " " + isAdditional + " " + interchanges);
-
-                                //legs node is JSON Array
+                                  //legs node is JSON Array
                                 JSONArray jsonArrayLegs = journey.getJSONArray("legs");
                                 for (int j = 0; j < jsonArrayLegs.length(); j++) {
                                     JSONObject leg = jsonArrayLegs.getJSONObject(j);
@@ -316,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
                                     long travelTime = originArrivalDate.getTime() - originDepartureDate.getTime();
                                     Log.d("TripRequest_TravelTime ", String.valueOf(originArrivalDate.getTime() - originDepartureDate.getTime()));
                                     long minutes = travelTime / 60000;
-                                    Log.d("TripRequest_TravelTime ", minutes + " Minuten ");
+                                    Log.d("TripRequest_TravelTime ", minutes + " Minuten");
 
                                     //transportation node is JSON Object
                                     JSONObject jsonObjectTransportation = leg.getJSONObject("transportation");
@@ -325,6 +320,9 @@ public class MainActivity extends AppCompatActivity {
                                     // if 0 dann fußweg dabei
                                     Log.d("TripRequest_TRANSPORT ", String.valueOf(transportationName));
                                 }
+
+                                //end of a journey element
+                                Log.d("TripRequest_Journey_# ", String.valueOf(i));
 
                                 // Tutorial: https://stackoverflow.com/questions/47129961/how-to-parsing-multi-dimensional-json-data-array-in-android-studio
                             }
