@@ -5,8 +5,10 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     //Trip Request
     public LinearLayout linLayTripRequest;
     public Button buttonTripRequest;
+    //public ArrayAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 tripRequest();
             }
         });
+        //myAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
     }
 
     //Origin
@@ -323,6 +328,14 @@ public class MainActivity extends AppCompatActivity {
 
                                 //end of a journey element
                                 Log.d("TripRequest_Journey_# ", String.valueOf(i));
+
+                                /*ArrayList<String> myArrayList = new ArrayList<>();
+                                /myArrayList.add(jsonArrayJourneys.getJSONObject(i).getString("journeys"));
+                                ListView myList = findViewById(R.id.listv);
+                                myList.setAdapter(myAdapter);
+                                myAdapter.clear();
+                                myAdapter.add(myArrayList);
+                                myAdapter.notifyDataSetChanged(); */
 
                                 // Tutorial: https://stackoverflow.com/questions/47129961/how-to-parsing-multi-dimensional-json-data-array-in-android-studio
                             }
