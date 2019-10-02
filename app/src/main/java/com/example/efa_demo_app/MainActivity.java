@@ -21,6 +21,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.efa_demo_app.Helpers.Journey;
+import com.example.efa_demo_app.Helpers.JourneyAdapter;
+import com.example.efa_demo_app.Helpers.Trip;
+import com.example.efa_demo_app.Helpers.TripAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,10 +78,17 @@ public class MainActivity extends AppCompatActivity {
     public Button buttonTripRequest;
     //public ArrayAdapter myAdapter;
 
+    //Trips list
+    private List<Journey> journeyList = new ArrayList<>();
+    private List<Trip> allTrips;
+    private ListView tripsListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tripsListView = findViewById(R.id.listv);
 
         //Origin
         linLayStartHS = findViewById(R.id.linLayStartHS);
@@ -140,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
                 tripRequestURIfinal = tripRequestURIbegin + selectedOriginStationID + tripRequestURIend + selectedDestinationStationID;
                 Log.d("TripRequest: ", tripRequestURIfinal);
 
+                linLayStartHS.setVisibility(View.GONE);
+                linLayZielHS.setVisibility(View.GONE);
+                linLayTripRequest.setVisibility(View.GONE);
                 //Toast.makeText(MainActivity.this, "Triggers Trip Request: " + selectedOriginStationID + " to " + selectedDestinationStationID, Toast.LENGTH_LONG).show();
                 tripRequest();
             }
@@ -285,8 +300,11 @@ public class MainActivity extends AppCompatActivity {
                             JSONArray jsonArrayJourneys = response.getJSONArray("journeys");
                             for (int i = 0; i < jsonArrayJourneys.length(); i++) {
                                 JSONObject journey = jsonArrayJourneys.getJSONObject(i);
+                                Log.d("test", journey.toString());
 
-                                  //legs node is JSON Array
+                                allTrips = new ArrayList<>();
+
+                                //legs node is JSON Array
                                 JSONArray jsonArrayLegs = journey.getJSONArray("legs");
                                 for (int j = 0; j < jsonArrayLegs.length(); j++) {
                                     JSONObject leg = jsonArrayLegs.getJSONObject(j);
@@ -297,10 +315,12 @@ public class MainActivity extends AppCompatActivity {
                                     //origin node is JSON Object
                                     JSONObject jsonObjectOrigin = leg.getJSONObject("origin");
                                     String originDepartureTime = jsonObjectOrigin.getString("departureTimePlanned");
+
                                     //Log.d("TripRequest_DepartTime ", String.valueOf(originDepartureTime));
                                     //convert String to date
                                     DateFormat formatDepartureTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY);
                                     Date originDepartureDate = formatDepartureTime.parse(originDepartureTime);
+                                    originDepartureDate.getTime();
                                     Log.d("TripRequest_DepartTime ", String.valueOf(originDepartureDate));
 
                                     //destination node is JSON Object
@@ -324,21 +344,20 @@ public class MainActivity extends AppCompatActivity {
 
                                     // if 0 dann fußweg dabei
                                     Log.d("TripRequest_TRANSPORT ", String.valueOf(transportationName));
+
+                                    allTrips.add(new Trip(String.valueOf(originDepartureDate), String.valueOf(originArrivalDate), minutes,String.valueOf(transportationName)));
+                                    Log.d("test", String.valueOf(allTrips.size()));
                                 }
+
+                                journeyList.add(new Journey(allTrips));
 
                                 //end of a journey element
                                 Log.d("TripRequest_Journey_# ", String.valueOf(i));
 
-                                /*ArrayList<String> myArrayList = new ArrayList<>();
-                                /myArrayList.add(jsonArrayJourneys.getJSONObject(i).getString("journeys"));
-                                ListView myList = findViewById(R.id.listv);
-                                myList.setAdapter(myAdapter);
-                                myAdapter.clear();
-                                myAdapter.add(myArrayList);
-                                myAdapter.notifyDataSetChanged(); */
 
                                 // Tutorial: https://stackoverflow.com/questions/47129961/how-to-parsing-multi-dimensional-json-data-array-in-android-studio
                             }
+
 
                         } catch (JSONException e) {
                             Log.e("ERROR", e.toString());
@@ -346,6 +365,34 @@ public class MainActivity extends AppCompatActivity {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
+
+//                        Log.d("test", "-------------------------------------------------------------------");
+//                        Log.d("test", String.valueOf(allTrips.size()));
+//                        String[] transports = new String[allTrips.size()];
+//                        int counter = 0;
+//                        for (Trip t : allTrips) {
+//                            Log.d("test", t.arrivalTime);
+//                            Log.d("test", t.departureTime);
+//                            Log.d("test", String.valueOf(t.travelTimeMinutes));
+//
+//
+//                            transports[counter] = t.transport;
+//                            counter++;
+//                        }
+
+                        JourneyAdapter journeyAdapter = new JourneyAdapter(getApplicationContext(), journeyList);
+                        tripsListView.setAdapter(journeyAdapter);
+
+                        //THIS IS WORKING !
+//                        TripAdapter tripAdapter = new TripAdapter(getApplicationContext(), allTrips);
+//                        tripsListView.setAdapter(tripAdapter);
+
+
+//                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+//                                android.R.layout.simple_list_item_1, android.R.id.text1, transports);
+//                        tripsListView.setAdapter(adapter);
+
+
                     }
                 }, new Response.ErrorListener() {
             @Override
