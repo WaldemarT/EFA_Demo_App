@@ -5,7 +5,6 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -24,7 +23,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.efa_demo_app.Helpers.Journey;
 import com.example.efa_demo_app.Helpers.JourneyAdapter;
 import com.example.efa_demo_app.Helpers.Trip;
-import com.example.efa_demo_app.Helpers.TripAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -345,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                                     // if 0 dann fußweg dabei
                                     Log.d("TripRequest_TRANSPORT ", String.valueOf(transportationName));
 
-                                    allTrips.add(new Trip(String.valueOf(originDepartureDate), String.valueOf(originArrivalDate), minutes,String.valueOf(transportationName)));
+                                    allTrips.add(new Trip(String.valueOf(originDepartureDate), String.valueOf(originArrivalDate), minutes, String.valueOf(transportationName)));
                                     Log.d("test", String.valueOf(allTrips.size()));
                                 }
 
@@ -366,32 +364,8 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-//                        Log.d("test", "-------------------------------------------------------------------");
-//                        Log.d("test", String.valueOf(allTrips.size()));
-//                        String[] transports = new String[allTrips.size()];
-//                        int counter = 0;
-//                        for (Trip t : allTrips) {
-//                            Log.d("test", t.arrivalTime);
-//                            Log.d("test", t.departureTime);
-//                            Log.d("test", String.valueOf(t.travelTimeMinutes));
-//
-//
-//                            transports[counter] = t.transport;
-//                            counter++;
-//                        }
-
                         JourneyAdapter journeyAdapter = new JourneyAdapter(getApplicationContext(), journeyList);
                         tripsListView.setAdapter(journeyAdapter);
-
-                        //THIS IS WORKING !
-//                        TripAdapter tripAdapter = new TripAdapter(getApplicationContext(), allTrips);
-//                        tripsListView.setAdapter(tripAdapter);
-
-
-//                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-//                                android.R.layout.simple_list_item_1, android.R.id.text1, transports);
-//                        tripsListView.setAdapter(adapter);
-
 
                     }
                 }, new Response.ErrorListener() {
