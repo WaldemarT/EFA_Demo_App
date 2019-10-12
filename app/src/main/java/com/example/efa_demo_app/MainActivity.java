@@ -39,7 +39,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    //StopFinder Request URI- Example http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=mto
+    //StopFinder Request URI Example: http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=mto
     public String stopFinderURI = "http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=";
     public String stopFinderURIfinal;
 
