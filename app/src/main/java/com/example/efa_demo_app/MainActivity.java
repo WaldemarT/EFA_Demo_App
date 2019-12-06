@@ -1,10 +1,12 @@
 package com.example.efa_demo_app;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -12,6 +14,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -39,16 +42,16 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    //StopFinder Request URI Example: http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=mto
+    // StopFinder Request URI Example: http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=mto
     public String stopFinderURI = "http://smartmmi.demo.mentz.net/smartmmi/XML_STOPFINDER_REQUEST?outputFormat=rapidJson&type_sf=any&name_sf=";
     public String stopFinderURIfinal;
 
-    //Trip Request URI Example: http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&name_origin=de:08212:89&type_destination=stop&name_destination=de:08212:5203
+    // Trip Request URI Example: http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&name_origin=de:08212:89&type_destination=stop&name_destination=de:08212:5203
     public String tripRequestURIbegin = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&name_origin=";
     public String tripRequestURIend = "&type_destination=stop&name_destination=";
     public String tripRequestURIfinal;
 
-    //Origin
+    // Origin
     public LinearLayout linLayStartHS;
     public TextView editTextOrigin;
     public TextView requestEFAOrigin;
@@ -57,12 +60,12 @@ public class MainActivity extends AppCompatActivity {
     public String selectedOriginItem;
     public String selectedOriginStationID;
 
-    //General Parameters
+    // General Parameters
     private RequestQueue mQeue;
     public HashMap<String, String> data;
     public PopupMenu popupMenu;
 
-    //Destination
+    // Destination
     public LinearLayout linLayZielHS;
     public TextView editTextDestination;
     public TextView requestEFADestination;
@@ -71,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
     public String selectedDestinationItem;
     public String selectedDestinationStationID;
 
-    //Trip Request
+    // Trip Request
     public LinearLayout linLayTripRequest;
     public Button buttonTripRequest;
     //public ArrayAdapter myAdapter;
 
-    //Trips list
+    // Trips list
     private List<Journey> journeyList = new ArrayList<>();
     private List<Trip> allTrips;
     private ListView tripsListView;
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         tripsListView = findViewById(R.id.listv);
 
-        //Origin
+        // Origin
         linLayStartHS = findViewById(R.id.linLayStartHS);
         editTextOrigin = findViewById(R.id.editTextOrigin);
         buttonSearchOrigin = findViewById(R.id.buttonSearchOrigin);
@@ -96,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
         resultEFAOrigin = findViewById(R.id.responseOriginTextView);
         resultEFAOrigin.setMovementMethod(new ScrollingMovementMethod());
 
-        //General Parameters
+        // General Parameters
         mQeue = Volley.newRequestQueue(this);
         data = new HashMap<>();
 
-        //Destination
+        // Destination
         linLayZielHS = findViewById(R.id.linLayZielHS);
         editTextDestination = findViewById(R.id.editTextDestination);
         buttonSearchDestination = findViewById(R.id.buttonSearchDestination);
@@ -108,11 +111,11 @@ public class MainActivity extends AppCompatActivity {
         resultEFADestination = findViewById(R.id.responseDestinationTextView);
         resultEFADestination.setMovementMethod(new ScrollingMovementMethod());
 
-        //Trip Request
+        // Trip Request
         linLayTripRequest = findViewById(R.id.linLayTripRequest);
         buttonTripRequest = findViewById(R.id.buttonTripRequest);
 
-        //Origin
+        // Origin
         buttonSearchOrigin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Destination
+        // Destination
         buttonSearchDestination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //TripRequest
+        // TripRequest
         buttonTripRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         //myAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
     }
 
-    //Origin
+    // Origin
     private void jsonParseOrigin() {
 
         String url = stopFinderURIfinal;
@@ -187,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
                                         selectedOriginItem = item.getTitle().toString();
                                         editTextOrigin.setText(selectedOriginItem);
                                         Log.d("selectedOriginTitle ", selectedOriginItem);
-                                        //DEBUG
-                                        // Toast.makeText(MainActivity.this, selectedOriginItem, Toast.LENGTH_SHORT).show();
+                                        // DEBUG
+                                        //Toast.makeText(MainActivity.this, selectedOriginItem, Toast.LENGTH_SHORT).show();
 
                                         selectedOriginStationID = data.get(selectedOriginItem);
                                         if (selectedOriginStationID != null) {
@@ -200,13 +203,13 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                //DEBUG
+                                // DEBUG
                                 resultEFAOrigin.append(stationName + "; " + stationID + "; " + (stationMatchQuality) + "\n\n");
                             }
                             //Log.d("HashMapAll: ", String.valueOf(data));
                             popupMenu.show();
 
-                            // set Linear Layout visible for user to select destination station
+                            // set LinearLayout visible for user to select destination station
                             linLayZielHS.setVisibility(View.VISIBLE);
 
                         } catch (JSONException e) {
@@ -223,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         mQeue.add(request);
     }
 
-    //Destination
+    // Destination
     private void jsonParseDestination() {
 
         String url = stopFinderURIfinal;
@@ -250,8 +253,8 @@ public class MainActivity extends AppCompatActivity {
                                         selectedDestinationItem = item.getTitle().toString();
                                         editTextDestination.setText(selectedDestinationItem);
                                         Log.d("selectedDestTitle ", selectedDestinationItem);
-                                        //DEBUG
-                                        // Toast.makeText(MainActivity.this, selectedOriginItem, Toast.LENGTH_SHORT).show();
+                                        // DEBUG
+                                        //Toast.makeText(MainActivity.this, selectedOriginItem, Toast.LENGTH_SHORT).show();
 
                                         selectedDestinationStationID = data.get(selectedDestinationItem);
                                         if (selectedDestinationStationID != null) {
@@ -263,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                //DEBUG
+                                // DEBUG
                                 resultEFADestination.append(stationName + "; " + stationID + "; " + (stationMatchQuality) + "\n\n");
                             }
                             //Log.d("HashMapAll: ", String.valueOf(data));
@@ -302,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 allTrips = new ArrayList<>();
 
-                                //legs node is JSON Array
+                                // legs node is JSON Array
                                 JSONArray jsonArrayLegs = journey.getJSONArray("legs");
                                 for (int j = 0; j < jsonArrayLegs.length(); j++) {
                                     JSONObject leg = jsonArrayLegs.getJSONObject(j);
@@ -310,33 +313,33 @@ public class MainActivity extends AppCompatActivity {
                                     //int duration = leg.getInt("duration");
                                     //Log.d("TripRequest_LEGS ", String.valueOf(duration));
 
-                                    //origin node is JSON Object
+                                    // origin node is JSON Object
                                     JSONObject jsonObjectOrigin = leg.getJSONObject("origin");
                                     String originDepartureTime = jsonObjectOrigin.getString("departureTimePlanned");
 
                                     //Log.d("TripRequest_DepartTime ", String.valueOf(originDepartureTime));
-                                    //convert String to date
+                                    // convert String to date
                                     DateFormat formatDepartureTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY);
                                     Date originDepartureDate = formatDepartureTime.parse(originDepartureTime);
                                     originDepartureDate.getTime();
                                     Log.d("TripRequest_DepartTime ", String.valueOf(originDepartureDate));
 
-                                    //destination node is JSON Object
+                                    // destination node is JSON Object
                                     JSONObject jsonObjectDestination = leg.getJSONObject("destination");
                                     String originArrivalTime = jsonObjectDestination.getString("arrivalTimePlanned");
                                     //Log.d("TripRequest_ArriveTime ", String.valueOf(originArrivalTime));
-                                    //convert String to date
+                                    // convert String to date
                                     DateFormat formatArrivalTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY);
                                     Date originArrivalDate = formatArrivalTime.parse(originArrivalTime);
                                     Log.d("TripRequest_ArriveTime ", String.valueOf(originArrivalDate));
 
-                                    //calculating trip duration "travelTime"
+                                    // calculating trip duration "travelTime"
                                     long travelTime = originArrivalDate.getTime() - originDepartureDate.getTime();
                                     Log.d("TripRequest_TravelTime ", String.valueOf(originArrivalDate.getTime() - originDepartureDate.getTime()));
                                     long minutes = travelTime / 60000;
                                     Log.d("TripRequest_TravelTime ", minutes + " Minuten");
 
-                                    //transportation node is JSON Object
+                                    // transportation node is JSON Object
                                     JSONObject jsonObjectTransportation = leg.getJSONObject("transportation");
                                     String transportationName = jsonObjectTransportation.getString("name");
 
@@ -366,6 +369,34 @@ public class MainActivity extends AppCompatActivity {
 
                         JourneyAdapter journeyAdapter = new JourneyAdapter(getApplicationContext(), journeyList);
                         tripsListView.setAdapter(journeyAdapter);
+
+                        // adding onItemClickListener to trigger AlarmDialog
+                        tripsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                final Object o = tripsListView.getItemAtPosition(position);
+                                //Toast.makeText(getBaseContext(),String.valueOf(o),Toast.LENGTH_SHORT).show();
+
+                                new AlertDialog.Builder(MainActivity.this)
+                                        //.setTitle("Travel Companion Service")
+                                        .setTitle("Aktivieren der Reisebegleitung")
+                                        //.setMessage("Set the selected trip as actual trip?")
+                                        .setMessage("Möchten Sie die Reisebegleitung für gewählte Route aktivieren?")
+
+                                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                                        // The dialog is automatically dismissed when a dialog button is clicked.
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // Continue with delete operation
+                                                Toast.makeText(getBaseContext(), "Reisebegleitung für gewählte Reise aktiviert",Toast.LENGTH_LONG).show();
+                                            }
+                                        })
+
+                                        // A null listener allows the button to dismiss the dialog and take no further action.
+                                        .setNegativeButton(android.R.string.no, null)
+                                        .setIcon(android.R.drawable.ic_dialog_map)
+                                        .show();
+                            }
+                        });
 
                     }
                 }, new Response.ErrorListener() {
