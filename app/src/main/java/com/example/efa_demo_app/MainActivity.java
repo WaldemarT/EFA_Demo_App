@@ -84,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
     private List<Trip> allTrips;
     private ListView tripsListView;
 
+    // Fixing Footpath Bug
+    private String transportationName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -341,9 +344,18 @@ public class MainActivity extends AppCompatActivity {
 
                                     // transportation node is JSON Object
                                     JSONObject jsonObjectTransportation = leg.getJSONObject("transportation");
-                                    String transportationName = jsonObjectTransportation.getString("name");
 
-                                    // if 0 dann fußweg dabei
+                                    try {
+                                        transportationName = jsonObjectTransportation.getString("name");
+                                        Log.d("TryCatchBlock", transportationName);
+                                    }
+                                    catch (Exception e){
+                                        Log.d("TryCatchBlock", String.valueOf(e));
+                                        // transportation node is JSON Object
+                                        JSONObject jsonObjectProduct = jsonObjectTransportation.getJSONObject("product");
+                                        transportationName = jsonObjectProduct.getString("name");
+                                    }
+
                                     Log.d("TripRequest_TRANSPORT ", String.valueOf(transportationName));
 
                                     allTrips.add(new Trip(String.valueOf(originDepartureDate), String.valueOf(originArrivalDate), minutes, String.valueOf(transportationName)));
@@ -387,7 +399,7 @@ public class MainActivity extends AppCompatActivity {
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Continue with delete operation
-                                                Toast.makeText(getBaseContext(), "Reisebegleitung für gewählte Reise aktiviert",Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getBaseContext(), "Reisebegleitung für gewählte Reise nach: " + selectedDestinationItem + " aktiviert",Toast.LENGTH_LONG).show();
                                             }
                                         })
 
