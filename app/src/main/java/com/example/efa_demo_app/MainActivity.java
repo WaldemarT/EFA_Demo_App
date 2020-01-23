@@ -1,7 +1,12 @@
 package com.example.efa_demo_app;
 
+import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
@@ -16,6 +21,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +38,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
     public String tripRequestURIbegin = "http://smartmmi.demo.mentz.net/smartmmi/XML_TRIP_REQUEST2?outputFormat=rapidJson&type_sf=any&type_origin=stop&name_origin=";
     public String tripRequestURIend = "&type_destination=stop&name_destination=";
     public String tripRequestURIfinal;
+
+    // Stop List Request
+    public String stopListRequestURI = "http://smartmmi.demo.mentz.net/sl3/XML_STOPLIST_REQUEST?stopListSubnetwork=kvv&outputFormat=rapidJSON";
+    public Button buttonStopListRequest;
+    public TextView resultStopListRequest;
+    public StringBuffer stopListResult;
 
     // Origin
     public LinearLayout linLayStartHS;
@@ -87,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
     // Fixing Footpath Bug
     private String transportationName;
 
+    // Save files to external storage
+    private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +136,12 @@ public class MainActivity extends AppCompatActivity {
         // Trip Request
         linLayTripRequest = findViewById(R.id.linLayTripRequest);
         buttonTripRequest = findViewById(R.id.buttonTripRequest);
+
+        // Stop List Request
+        buttonStopListRequest = findViewById(R.id.buttonStopListRequest);
+        resultStopListRequest = findViewById(R.id.resultStopListRequest);
+        resultStopListRequest.setMovementMethod(new ScrollingMovementMethod());
+        stopListResult = new StringBuffer("Test");
 
         // Origin
         buttonSearchOrigin.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +189,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //myAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+
+        // Stop List Request
+        buttonStopListRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("StopListRequest: ", stopListRequestURI);
+                stopListRequest();
+            }
+        });
     }
 
     // Origin
@@ -292,6 +326,7 @@ public class MainActivity extends AppCompatActivity {
         mQeue.add(request);
     }
 
+    // Origin
     public void tripRequest() {
 
         String url = tripRequestURIfinal;
@@ -348,8 +383,7 @@ public class MainActivity extends AppCompatActivity {
                                     try {
                                         transportationName = jsonObjectTransportation.getString("name");
                                         Log.d("TryCatchBlock", transportationName);
-                                    }
-                                    catch (Exception e){
+                                    } catch (Exception e) {
                                         Log.d("TryCatchBlock", String.valueOf(e));
                                         // transportation node is JSON Object
                                         JSONObject jsonObjectProduct = jsonObjectTransportation.getJSONObject("product");
@@ -399,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Continue with delete operation
-                                                Toast.makeText(getBaseContext(), "Reisebegleitung für gewählte Reise nach: " + selectedDestinationItem + " aktiviert",Toast.LENGTH_LONG).show();
+                                                Toast.makeText(getBaseContext(), "Reisebegleitung für gewählte Reise nach: " + selectedDestinationItem + " aktiviert", Toast.LENGTH_LONG).show();
                                             }
                                         })
 
@@ -410,6 +444,75 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        mQeue.add(request);
+    }
+
+    // Stop List Request
+    public void stopListRequest() {
+
+        String url = stopListRequestURI;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArrayLocations = response.getJSONArray("locations");
+                            for (int i = 0; i < jsonArrayLocations.length(); i++) {
+                                JSONObject location = jsonArrayLocations.getJSONObject(i);
+                                //Log.d("StopListRequest", String.valueOf(location));
+
+                                String stationID = location.getString("id");
+                                String stationNameMinor = location.getString("name");
+                                //Log.d("StopListRequest", stationNameMinor + "," + stationID);
+
+                                JSONObject jsonObjectParent = location.getJSONObject("parent");
+
+                                String stationNameMajor = jsonObjectParent.getString("name");
+                                //Log.d("StopListRequest", String.valueOf(stationNameMajor));
+
+                                stopListResult.append(stationID + "," + stationNameMajor + "," + stationNameMinor + "\n");
+                                Log.d("hallo", String.valueOf(stopListResult));
+                                resultStopListRequest.append(stationID + ", " + stationNameMajor + ", " + stationNameMinor + "\n");
+                                //Log.d("StopListRequest", stationID + ", " + stationNameMajor + ", " + stationNameMinor);
+                            }
+
+                            // Writes StringBuffer stopListResult to file stations_WT.json on external Storage (Documents)
+                            // Check whether this app has write external storage permission or not.
+                            int writeExternalStoragePermission = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            // If do not grant write external storage permission.
+                            if (writeExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
+                                // Request user to grant write external storage permission.
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                            }
+                            // Save email_public.txt file to /storage/emulated/0/DCIM folder
+                            String publicDcimDirPath = ExternalStorageUtil.getPublicExternalStorageBaseDir(Environment.DIRECTORY_DOCUMENTS);
+
+                            File newFile = new File(publicDcimDirPath, "stations_WT.json");
+
+                            FileWriter fw = new FileWriter(newFile);
+
+                            fw.write(String.valueOf(stopListResult));
+
+                            fw.flush();
+
+                            fw.close();
+
+                            Toast.makeText(getApplicationContext(), "Save to public external storage success. File Path " + newFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+
+                        } catch (JSONException e) {
+                            Log.e("ERROR", e.toString());
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override

@@ -49,6 +49,21 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="   Start HS Suchen   " />
+
+        <Button
+            android:id="@+id/buttonStopListRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="   Stop List Request   " />
+
+        <TextView
+            android:id="@+id/resultStopListRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:maxHeight="600dp"
+            android:hint=" Result of Stop List Request:   " />
     </LinearLayout>
 
 
