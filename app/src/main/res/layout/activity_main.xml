@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp" >
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <LinearLayout
         android:id="@+id/linLayStartHS"
-        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -27,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="   HS Name:   " />
-            </LinearLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/requestOriginTextView"
@@ -39,9 +38,9 @@
             android:id="@+id/responseOriginTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
+            android:hint="   EFA response   :"
             android:maxHeight="100dp"
-            android:hint="   EFA response   :" />
+            android:paddingTop="16dp" />
 
         <Button
             android:id="@+id/buttonSearchOrigin"
@@ -49,36 +48,21 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="   Start HS Suchen   " />
-
-        <Button
-            android:id="@+id/buttonStopListRequest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="   Stop List Request   " />
-
-        <TextView
-            android:id="@+id/resultStopListRequest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:maxHeight="600dp"
-            android:hint=" Result of Stop List Request:   " />
     </LinearLayout>
 
 
     <!-- Ziel Haltestelle -->
     <LinearLayout
         android:id="@+id/linLayZielHS"
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -102,9 +86,9 @@
             android:id="@+id/responseDestinationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
+            android:hint="   EFA response   :"
             android:maxHeight="100dp"
-            android:hint="   EFA response   :" />
+            android:paddingTop="16dp" />
 
         <Button
             android:id="@+id/buttonSearchDestination"
@@ -118,10 +102,10 @@
     <!-- Trip Request-->
     <LinearLayout
         android:id="@+id/linLayTripRequest"
-        android:orientation="vertical"
-        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <Button
@@ -132,9 +116,33 @@
             android:text="   Verbindungen Suchen   " />
     </LinearLayout>
 
+    <!-- Stop List Request -->
+    <LinearLayout
+        android:id="@+id/linLayStopListRequest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/buttonStopListRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="   Stop List Request   " />
+
+        <TextView
+            android:id="@+id/resultStopListRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint=" Result of Stop List Request:   "
+            android:maxHeight="600dp"
+            android:paddingTop="16dp" />
+    </LinearLayout>
+
     <ListView
         android:id="@+id/listv"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
