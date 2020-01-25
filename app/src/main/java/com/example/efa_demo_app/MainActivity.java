@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         buttonStopListRequest = findViewById(R.id.buttonStopListRequest);
         resultStopListRequest = findViewById(R.id.resultStopListRequest);
         resultStopListRequest.setMovementMethod(new ScrollingMovementMethod());
-        stopListResult = new StringBuffer("Test");
+        stopListResult = new StringBuffer("");
 
         // Origin
         buttonSearchOrigin.setOnClickListener(new View.OnClickListener() {
